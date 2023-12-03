@@ -11,8 +11,8 @@
 
 #ifndef DISALLOW_EVIL_CONSTRUCTORS
 #define DISALLOW_EVIL_CONSTRUCTORS(name) \
-    name(const name &) = delete; \
-    name &operator=(const name &) = delete /* NOLINT */
+    name(const name &); \
+    name &operator=(const name &) /* NOLINT */
 #endif // !DISALLOW_EVIL_CONSTRUCTORS
 
 using MutexAutoLock = std::unique_lock<std::mutex>;

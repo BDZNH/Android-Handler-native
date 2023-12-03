@@ -57,7 +57,11 @@ ALooper::ALooper()
 
 ALooper::~ALooper() {
     LOGD("destructed {}", fmt::ptr(this));
+    
     stop();
+    if (mEventQueue.size() > 0) {
+        LOGD("destructed with droped {} message", mEventQueue.size());
+    }
     // stale AHandlers are now cleaned up in the constructor of the next ALooper to come along
 }
 

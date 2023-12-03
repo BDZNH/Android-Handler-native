@@ -36,8 +36,38 @@ struct SampleClass :public AHandler {
     }
 };
 
+struct SampleClass2 :public AHandler {
+    virtual void onMessageReceived(const std::shared_ptr<AMessage>& msg) {
+        LOGI("received msg what = {} msg = {}", msg->what(), fmt::ptr(msg));
+        switch (msg->what())
+        {
+        case 1:
+            LOGI("received msg what = 1 msg = {}", fmt::ptr(msg));
+            break;
+        case 2:
+        {
+            std::shared_ptr<AReplyToken> replyID;
+            if (!msg->senderAwaitsResponse(&replyID))
+            {
+                LOGE("can't find replyToken");
+                return;
+            }
+            std::shared_ptr<AMessage> response = std::make_shared<AMessage>();
+            response->setWhat(22);
+            response->postReply(replyID);
+            LOGD("post reply in receive thread");
+        }
+        break;
+        default:
+            LOGE("unknown msg what={}", msg->what());
+            break;
+        }
+    }
+};
+
 int main()
 {
+    printf("start init logger\n");
     initLogger();
     LOGI("started");
     std::shared_ptr<ALooper> Looper = std::make_shared<ALooper>();
@@ -49,14 +79,16 @@ int main()
     }
 
     std::shared_ptr<SampleClass> sample = std::make_shared<SampleClass>();
+    std::shared_ptr<SampleClass2> sample2 = std::make_shared<SampleClass2>();
     
     Looper->registerHandler(sample);
+    Looper->registerHandler(sample2);
     std::shared_ptr<AMessage> msg = std::make_shared<AMessage>();
     msg->setWhat(1);
     msg->setTarget(std::static_pointer_cast<AHandler>(sample));
     msg->post(1000*1000); //delay 1s
 
-    std::shared_ptr<AMessage> msg2 = std::make_shared<AMessage>(2, std::static_pointer_cast<AHandler>(sample));
+    std::shared_ptr<AMessage> msg2 = std::make_shared<AMessage>(2, std::static_pointer_cast<AHandler>(sample2));
     std::shared_ptr<AMessage> response;
     status_t ret = msg2->postAndAwaitResponse(&response);
     if ( ret == OK )
@@ -70,8 +102,8 @@ int main()
     
     std::this_thread::sleep_for(std::chrono::seconds(5));
 
-    Looper.reset();
-    Looper = nullptr;
+    Looper->unregisterHandler(sample->id());
+    Looper->unregisterHandler(sample2->id());
     return 0;
 }
 ```
