@@ -15,20 +15,6 @@ struct SampleClass :public AHandler {
         case 1:
             LOGI("received msg what = 1 msg = {}", fmt::ptr(msg));
             break;
-        case 2:
-        {
-            std::shared_ptr<AReplyToken> replyID;
-            if (!msg->senderAwaitsResponse(&replyID))
-            {
-                LOGE("can't find replyToken");
-                return;
-            }
-            std::shared_ptr<AMessage> response = std::make_shared<AMessage>();
-            response->setWhat(22);
-            response->postReply(replyID);
-            LOGD("post reply in receive thread");
-        }
-            break;
         default:
             LOGE("unknown msg what={}", msg->what());
             break;
@@ -41,11 +27,26 @@ struct SampleClass2 :public AHandler {
         LOGI("received msg what = {} msg = {}", msg->what(), fmt::ptr(msg));
         switch (msg->what())
         {
-        case 1:
-            LOGI("received msg what = 1 msg = {}", fmt::ptr(msg));
-            break;
         case 2:
         {
+            int32_t arg;
+            if (msg->findInt32("arg1", &arg))
+            {
+                LOGI("received arg1 = {} from msg {}", arg, fmt::ptr(msg));
+            }
+            if (msg->findInt32("arg1", &arg))
+            {
+                LOGI("received arg2 = {} from msg {}", arg, fmt::ptr(msg));
+            }
+            std::string stringmsg;
+            if (msg->findString("str1", stringmsg))
+            {
+                LOGI("received str1 = {} from msg {}", stringmsg, fmt::ptr(msg));
+            }
+            if (msg->findString("str2", stringmsg))
+            {
+                LOGI("received str1 = {} from msg {}", stringmsg, fmt::ptr(msg));
+            }
             std::shared_ptr<AReplyToken> replyID;
             if (!msg->senderAwaitsResponse(&replyID))
             {
@@ -89,11 +90,16 @@ int main()
     msg->post(1000*1000); //delay 1s
 
     std::shared_ptr<AMessage> msg2 = std::make_shared<AMessage>(2, std::static_pointer_cast<AHandler>(sample2));
+    msg2->setInt32("arg1", 123);
+    msg2->setInt32("arg2", 4567);
+    msg2->setString("str1", "str1 value");
+    msg2->setString("str2", "str2 value");
     std::shared_ptr<AMessage> response;
     status_t ret = msg2->postAndAwaitResponse(&response);
-    if ( ret == OK )
+    if ( ret == OK && response != nullptr)
     {
         LOGI("post response success what = {} msg = {}", response->what(), fmt::ptr(response));
+
     }
     else
     {
