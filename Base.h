@@ -9,6 +9,11 @@
 
 #include "Errors.h"
 
+#if defined(_MSC_VER)
+#include <BaseTsd.h>
+typedef SSIZE_T ssize_t;
+#endif
+
 #ifndef DISALLOW_EVIL_CONSTRUCTORS
 #define DISALLOW_EVIL_CONSTRUCTORS(name) \
     name(const name &); \

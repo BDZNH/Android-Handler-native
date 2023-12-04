@@ -11,11 +11,11 @@ namespace android {
             : mID(0),
             mVerboseStats(false),
             mMessageCounter(0) {
-            LOGD("constructed {}",fmt::ptr(this));
+            LOGV("constructed {}",fmt::ptr(this));
         }
 
         ~AHandler() {
-            LOGD("destructed {}",fmt::ptr(this));
+            LOGV("destructed {}",fmt::ptr(this));
         }
 
         ALooper::handler_id id() const {

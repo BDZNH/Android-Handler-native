@@ -49,18 +49,18 @@ int64_t ALooper::GetNowUs() {
 
 ALooper::ALooper()
     : mRunningLocally(false) {
-    LOGD("constructed {}", fmt::ptr(this));
+    LOGV("constructed {}", fmt::ptr(this));
     // clean up stale AHandlers. Doing it here instead of in the destructor avoids
     // the side effect of objects being deleted from the unregister function recursively.
     gLooperRoster.unregisterStaleHandlers();
 }
 
 ALooper::~ALooper() {
-    LOGD("destructed {}", fmt::ptr(this));
+    LOGV("destructed {}", fmt::ptr(this));
     
     stop();
     if (mEventQueue.size() > 0) {
-        LOGD("destructed with droped {} message", mEventQueue.size());
+        LOGV("destructed with droped {} message", mEventQueue.size());
     }
     // stale AHandlers are now cleaned up in the constructor of the next ALooper to come along
 }
