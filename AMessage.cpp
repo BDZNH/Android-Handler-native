@@ -32,6 +32,12 @@ AMessage::AMessage(uint32_t what, const std::shared_ptr<AHandler>& handler)
     LOGV("constructed {}", fmt::ptr(this));
 }
 
+AMessage::AMessage(const std::shared_ptr<AHandler>& handler)
+{
+    setTarget(handler);
+    LOGV("constructed {}", fmt::ptr(this));
+}
+
 AMessage::~AMessage() {
     clear();
     LOGV("destructed {}", fmt::ptr(this));

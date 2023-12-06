@@ -1,7 +1,10 @@
 #include "AHandler.h"
 #include "AMessage.h"
 namespace android {
-
+    std::shared_ptr<AMessage> AHandler::obtainMessage()
+    {
+        return std::make_shared<AMessage>(shared_from_this());
+    }
     void AHandler::deliverMessage(const std::shared_ptr<AMessage>& msg) {
         onMessageReceived(msg);
         mMessageCounter++;

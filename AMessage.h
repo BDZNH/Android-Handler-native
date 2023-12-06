@@ -62,6 +62,7 @@ public:
 
     AMessage();
     AMessage(uint32_t what, const std::shared_ptr<AHandler>& handler);
+    AMessage(const std::shared_ptr<AHandler>& handler);
     void setWhat(uint32_t what);
     uint32_t what() const;
 

@@ -68,7 +68,7 @@ struct SampleClass2 :public AHandler {
 
 int main()
 {
-    printf("start init logger\n");
+    //printf("start init logger\n");
     initLogger();
     LOGI("started");
     std::shared_ptr<ALooper> Looper = std::make_shared<ALooper>();
@@ -85,11 +85,14 @@ int main()
     Looper->registerHandler(sample);
     Looper->registerHandler(sample2);
     std::shared_ptr<AMessage> msg = std::make_shared<AMessage>();
+    LOGV("obtain first msg {}", fmt::ptr(msg));
     msg->setWhat(1);
     msg->setTarget(std::static_pointer_cast<AHandler>(sample));
     msg->post(1000*1000); //delay 1s
 
-    std::shared_ptr<AMessage> msg2 = std::make_shared<AMessage>(2, std::static_pointer_cast<AHandler>(sample2));
+    std::shared_ptr<AMessage> msg2 = sample2->obtainMessage();
+    LOGV("obtain second msg {}", fmt::ptr(msg2));
+    msg2->setWhat(2);
     msg2->setInt32("arg1", 123);
     msg2->setInt32("arg2", 4567);
     msg2->setString("str1", "str1 value");
@@ -98,8 +101,8 @@ int main()
     status_t ret = msg2->postAndAwaitResponse(&response);
     if ( ret == OK && response != nullptr)
     {
+        LOGV("obtain third msg {}", fmt::ptr(response));
         LOGI("post response success what = {} msg = {}", response->what(), fmt::ptr(response));
-
     }
     else
     {

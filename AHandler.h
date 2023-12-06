@@ -35,6 +35,8 @@ namespace android {
             return shared_from_this();
         }
 
+        std::shared_ptr<AMessage> obtainMessage();
+
     protected:
         virtual void onMessageReceived(const std::shared_ptr<AMessage>& msg) = 0;
 
